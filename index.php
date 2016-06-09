@@ -1,15 +1,21 @@
 <?php
 
-require "vendor/autoload.php";
+require 'vendor/autoload.php';
 
 use App\ResponsiveChecker;
 
-$url = $_GET['url'];
-if ($url == "") {
-    $error = "Invalid URL";
-} else {
-    $result = new ResponsiveChecker($url);
+$url = $_POST['url'];
+$error = false;
+$fullUrl = "http://{$url}";
+
+if ($_POST) {
+    if ($url == "") {
+        $error = true;
+    } else {      
+        $result = new ResponsiveChecker($url);
+    }
 }
+
 ?>
 
 <html>
@@ -18,7 +24,7 @@ if ($url == "") {
 </head>
 <body>
     <div class="container">
-        <form class="well" style="margin-top: 10%;">
+        <form class="well" method="POST" style="margin-top: 10%;">
             <h2>
                 Enter a URL
             </h2>
@@ -36,7 +42,7 @@ if ($url == "") {
                     <button type="submit" class="btn btn-primary default btn-lg btn-block">Check URL</button>
                 </div>
             </div>
-            <?php if (isset($error)) : ?>
+            <?php if ($error) : ?>
                 <p class="alert alert-danger">"<strong><?php echo $url; ?></strong>" is not a valid URL</p>
             <?php endif; ?>
         </form>
@@ -50,16 +56,16 @@ if ($url == "") {
                     Result
                 </div>
                 <div class="panel-body">
-                    <?php 
-                        if ($result->isResponsive()) {
-                            echo "{$url} shows signs of being responsive";
-                            if ($result->isRedirected()) { 
-                                echo "<strong> via redirecting</strong> to <a href='{$result->finalUrl()}' target='_blank'>{$result->finalUrl()}</a>";
-                            }
-                        } else {
-                            echo "{$url} doesn't look to be responsive";
-                        }
-                    ?>
+<?php 
+if ($result->isResponsive()) {
+    echo "{$url} shows signs of being responsive";
+    if ($result->isRedirected()) { 
+        echo "<strong> via redirecting</strong> to <a href='{$result->finalUrl()}' target='_blank'>{$result->finalUrl()}</a>";
+    }
+} else {
+    echo "{$url} doesn't look to be responsive";
+}
+?>
                 </div>
             </div>
         </div>
